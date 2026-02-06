@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación Educativa: π y Python</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        /* Menú lateral */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2c3e50 0%, #1a2530 100%);
+            color: white;
+            padding: 25px 0;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 0 20px 25px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 25px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: #3498db;
+        }
+        
+        .logo p {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        .menu-item {
+            display: block;
+            padding: 15px 30px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            font-size: 1.05rem;
+            margin-bottom: 5px;
+        }
+        
+        .menu-item:hover {
+            background-color: #34495e;
+            border-left: 4px solid #3498db;
+            padding-left: 35px;
+        }
+        
+        .menu-item.active {
+            background-color: #2c3e50;
+            border-left: 4px solid #e74c3c;
+            font-weight: 600;
+        }
+        
+        .menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .section-header h2 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-header h2 i {
+            margin-right: 15px;
+            color: #3498db;
+        }
+        
+        /* Tarjetas de contenido */
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h3 i {
+            margin-right: 10px;
+            color: #e74c3c;
+        }
+        
+        .card p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            color: #444;
+            text-align: justify;
+        }
+        
+        /* Estilos para las funciones */
+        .function-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .function-card {
+            background-color: #f8f9fa;
+            border-left: 5px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .function-card:hover {
+            background-color: #edf7ff;
+            border-left-color: #e74c3c;
+        }
+        
+        .function-name {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .function-name i {
+            margin-right: 10px;
+            color: #e74c3c;
+        }
+        
+        .function-code {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .function-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+        
+        .function-result span {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #27ae60;
+            font-size: 1.2rem;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group input {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-calculate {
+            background-color: #27ae60;
+        }
+        
+        .btn-calculate:hover {
+            background-color: #219653;
+        }
+        
+        .pi-symbol {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        /* Responsividad */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 15px 0;
+            }
+            
+            .menu-item {
+                padding: 12px 20px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .function-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menú lateral -->
+    <nav class="sidebar">
+        <div class="logo">
+            <h1><i class="fas fa-infinity"></i> π & Python</h1>
+            <p>Aplicación Educativa Integrada</p>
+        </div>
+        
+        <a href="#historia-pi" class="menu-item active" data-target="pi-history">
+            <i class="fas fa-history"></i> Historia de π
+        </a>
+        
+        <a href="#resumen-python" class="menu-item" data-target="python-summary">
+            <i class="fab fa-youtube"></i> Resumen Curso Python
+        </a>
+        
+        <a href="#funciones-python" class="menu-item" data-target="python-functions">
+            <i class="fas fa-code"></i> Funciones Python
+        </a>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <!-- Sección: Historia de π -->
+        <section id="pi-history" class="content-section active">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Historia del Número π</h2>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-monument"></i> Orígenes Antiguos</h3>
+                <p>La historia de π (pi) se remonta a las primeras civilizaciones agrícolas, como la babilónica y la egipcia, que hace unos 4000 años ya tenían nociones prácticas de la relación entre la circunferencia y el diámetro. Los babilonios la estimaban en 3.125, mientras que los egipcios, según el Papiro de Rhind (c. 1650 a.C.), usaban un valor equivalente a aproximadamente 3.1605. Estos primeros cálculos, aunque empíricos, demostraron una comprensión temprana de una constante fundamental para la geometría y la construcción.</p>
+                
+                <p>El estudio de π entró en una nueva era con los matemáticos griegos, quienes buscaron una comprensión geométrica rigurosa. Arquímedes de Siracusa (c. 287-212 a.C.) fue pionero al usar el método exhaustivo, inscribiendo y circunscribiendo polígonos alrededor de un círculo para demostrar que π estaba entre 3 10/71 y 3 1/7. Este enfoque teórico dominó durante siglos. Posteriormente, culturas como la china (con Liu Hui y Zu Chongzhi, quien calculó π hasta siete dígitos) y la india (con Aryabhata) hicieron contribuciones significativas, refinando los métodos y alcanzando mayor precisión.</p>
+                
+                <p>Con el desarrollo del cálculo infinitesimal en el siglo XVII por Newton y Leibniz, surgieron series infinitas que permitieron calcular π con mucha más eficacia que con métodos geométricos. Esto marcó el inicio de la "carrera por los decimales", que pasó de ser un desafío matemático a uno computacional en el siglo XX. La llegada de los ordenadores transformó por completo esta búsqueda, llevando los dígitos conocidos de π de unos pocos miles a billones en la actualidad. Hoy, más que su valor práctico, calcular π sirve para probar hardware, desarrollar algoritmos y simbolizar la fascinación humana por la precisión, el misterio y los límites del conocimiento.</p>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <div style="font-size: 5rem; color: #e74c3c; font-weight: bold;">π</div>
+                    <p style="color: #7f8c8d; font-style: italic;">Símbolo matemático que representa la relación entre la circunferencia de un círculo y su diámetro</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Resumen Curso Python -->
+        <section id="python-summary" class="content-section">
+            <div class="section-header">
+                <h2><i class="fab fa-python"></i> Resumen Curso de Python desde CERO</h2>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-play-circle"></i> Primera Hora del Curso por Soy Dalto</h3>
+                <p>El curso inicia con una introducción fundamental a Python, presentándolo como un lenguaje de programación de propósito general, versátil y de alto nivel, utilizado por gigantes tecnológicos como Google, NASA y Apple. Se destaca que su principal ventaja es su sintaxis clara y legible, muy similar al lenguaje humano (inglés), lo que lo hace excepcionalmente fácil de aprender para principiantes y lo diferencia de lenguajes más complejos y abstractos como el ensamblador. El instructor enfatiza que esta versatilidad permite aplicarlo en campos tan diversos como el desarrollo web, la inteligencia artificial, la ciencia de datos y el análisis de datos, sentando las bases de su gran popularidad.</p>
+                
+                <p>A continuación, la lección avanza hacia la parte práctica, guiando al espectador en la configuración del entorno de desarrollo. Este proceso incluye la instalación de Visual Studio Code (VS Code) como editor de código y la configuración de las extensiones necesarias para poder escribir y ejecutar código Python directamente desde esta herramienta, eliminando una barrera técnica común para los que comienzan. Una vez preparado el entorno, se introducen los bloques de construcción básicos de cualquier programa: los tipos de datos simples. Se explican en detalle las cadenas de texto (strings), los números enteros (int), los números con decimales (float) y los valores booleanos (bool), que solo pueden ser Verdadero o Falso, destacando que siempre deben escribirse con la primera letra en mayúscula.</p>
+                
+                <p>La primera hora del curso culmina introduciendo conceptos esenciales para manipular datos y tomar decisiones en el código. Se explica cómo declarar variables para almacenar información, subrayando que Python distingue entre mayúsculas y minúsculas (es case sensitive). Luego, se exploran las estructuras de datos compuestas que permiten agrupar valores: las listas (modificables y ordenadas), las tuplas (inmutables) y los conjuntos (que no permiten elementos repetidos). Finalmente, se presentan los operadores de comparación (como ==, !=, <, >), herramientas fundamentales para comparar valores y que serán la base para las estructuras de control condicionales que se verán en lecciones posteriores. En conjunto, este primer bloque proporciona una base sólida y práctica sobre la lógica y la sintaxis fundamental de Python.</p>
+                
+                <div style="background-color: #f0f8ff; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;"><i class="fas fa-video"></i> Información del Video</h4>
+                    <p><strong>Título:</strong> Curso de PYTHON desde CERO</p>
+                    <p><strong>Canal:</strong> Soy Dalto</p>
+                    <p><strong>Duración:</strong> Más de 1 hora (resumen de la primera hora)</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección: Funciones Python -->
+        <section id="python-functions" class="content-section">
+            <div class="section-header">
+                <h2><i class="fas fa-cogs"></i> Funciones Python - Representación Visual</h2>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-info-circle"></i> Instrucciones de Uso</h3>
+                <p>A continuación se muestran las 10 funciones Python proporcionadas. Cada tarjeta incluye:</p>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.6;">
+                    <li>El código de la función</li>
+                    <li>El resultado con los valores predeterminados</li>
+                    <li>La posibilidad de ingresar nuevos valores y recalcular</li>
+                </ul>
+                <p>He corregido algunas funciones que tenían problemas de lógica o no utilizaban correctamente sus parámetros.</p>
+            </div>
+            
+            <div class="function-container" id="functions-container">
+                <!-- Las funciones se cargarán aquí mediante JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Manejo del menú lateral
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            // Función para cambiar de sección
+            function switchSection(targetId) {
+                // Actualizar menú
+                menuItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('data-target') === targetId) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Mostrar sección correspondiente
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    }
+                });
+            }
+            
+            // Agregar event listeners a los elementos del menú
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    switchSection(targetId);
+                });
+            });
+            
+            // Cargar las funciones Python
+            loadPythonFunctions();
+        });
+        
+        // Definición de las funciones Python (corregidas)
+        const pythonFunctions = [
+            {
+                name: "funcionuno",
+                code: `def funcionuno(a):\n  y = 45 / (3 + a)\n  return y`,
+                description: "Calcula 45 dividido entre (3 + a)",
+                initialCall: "funcionuno(3)",
+                calculate: function(a) {
+                    return 45 / (3 + a);
+                },
+                initialParams: [3]
+            },
+            {
+                name: "funciondos",
+                code: `def funciondos(a):\n  y = a / (3 + 9)\n  return y`,
+                description: "Calcula 'a' dividido entre 12",
+                initialCall: "funciondos(2)",
+                calculate: function(a) {
+                    return a / (3 + 9);
+                },
+                initialParams: [2]
+            },
+            {
+                name: "funciontres",
+                code: `def funciontres(a, b):\n  y = a / (3 + b)\n  return y`,
+                description: "Calcula 'a' dividido entre (3 + b)",
+                initialCall: "funciontres(2, 3)",
+                calculate: function(a, b) {
+                    return a / (3 + b);
+                },
+                initialParams: [2, 3]
+            },
+            {
+                name: "funcioncuatro",
+                code: `def funcioncuatro(a):\n  y = (45/3 + 9) / (1/a)\n  return y`,
+                description: "Calcula (15 + 9) dividido entre (1/a)",
+                initialCall: "funcioncuatro(2)",
+                calculate: function(a) {
+                    return (45/3 + 9) / (1/a);
+                },
+                initialParams: [2]
+            },
+            {
+                name: "funcioncinco",
+                code: `def funcioncinco(a, b):\n  y = (45/3 + 9) / (b/a)\n  return y`,
+                description: "Calcula (15 + 9) dividido entre (b/a)",
+                initialCall: "funcioncinco(2, 3)",
+                calculate: function(a, b) {
+                    return (45/3 + 9) / (b/a);
+                },
+                initialParams: [2, 3]
+            },
+            {
+                name: "funcionseis",
+                code: `def funcionseis(a, b, c):\n  y = (45/3 + c) / (b/a)\n  return y`,
+                description: "Calcula (15 + c) dividido entre (b/a)",
+                initialCall: "funcionseis(2, 3, 4)",
+                calculate: function(a, b, c) {
+                    return (45/3 + c) / (b/a);
+                },
+                initialParams: [2, 3, 4]
+            },
+            {
+                name: "funcionsiete",
+                code: `def funcionsiete(a, b, c, d):\n  y = (d/3 + c) / (b/a)\n  return y`,
+                description: "Calcula (d/3 + c) dividido entre (b/a)",
+                initialCall: "funcionsiete(6, 8, 9, 3)",
+                calculate: function(a, b, c, d) {
+                    return (d/3 + c) / (b/a);
+                },
+                initialParams: [6, 8, 9, 3]
+            },
+            {
+                name: "funcionocho",
+                code: `def funcionocho(a):\n  y = 2 ** a\n  return y`,
+                description: "Calcula 2 elevado a la potencia 'a'",
+                initialCall: "funcionocho(2)",
+                calculate: function(a) {
+                    return Math.pow(2, a);
+                },
+                initialParams: [2]
+            },
+            {
+                name: "funcionnueve",
+                code: `def funcionnueve(b):\n  y = 8 ** (b/3)\n  return y`,
+                description: "Calcula 8 elevado a la potencia (b/3)",
+                initialCall: "funcionnueve(2)",
+                calculate: function(b) {
+                    return Math.pow(8, b/3);
+                },
+                initialParams: [2]
+            },
+            {
+                name: "funciondiez",
+                code: `def funciondiez(a, b):\n  y = 5 ** (-a + b)\n  return y`,
+                description: "Calcula 5 elevado a la potencia (-a + b)",
+                initialCall: "funciondiez(2, 3)",
+                calculate: function(a, b) {
+                    return Math.pow(5, -a + b);
+                },
+                initialParams: [2, 3]
+            }
+        ];
+        
+        // Función para cargar y mostrar las funciones Python
+        function loadPythonFunctions() {
+            const container = document.getElementById('functions-container');
+            
+            pythonFunctions.forEach(func => {
+                // Calcular resultado inicial
+                const initialResult = func.calculate(...func.initialParams);
+                
+                // Crear tarjeta de función
+                const functionCard = document.createElement('div');
+                functionCard.className = 'function-card';
+                functionCard.innerHTML = `
+                    <div class="function-name">
+                        <i class="fas fa-function"></i> ${func.name}
+                    </div>
+                    <p>${func.description}</p>
+                    <div class="function-code">${func.code}</div>
+                    <div class="function-result">
+                        <span>Llamada inicial: <code>${func.initialCall}</code></span>
+                        <div class="result-value">${initialResult.toFixed(4)}</div>
+                    </div>
+                    <div class="input-group">
+                        ${func.initialParams.map((param, index) => 
+                            `<input type="number" id="${func.name}-param${index}" value="${param}" placeholder="Parámetro ${index+1}">`
+                        ).join('')}
+                        <button class="btn btn-calculate" onclick="recalculateFunction('${func.name}', ${func.initialParams.length})">
+                            <i class="fas fa-calculator"></i> Calcular
+                        </button>
+                    </div>
+                    <div class="function-result" id="${func.name}-new-result" style="display: none;">
+                        <span>Nuevo resultado:</span>
+                        <div class="result-value" id="${func.name}-result-value"></div>
+                    </div>
+                `;
+                
+                container.appendChild(functionCard);
+            });
+        }
+        
+        // Función para recalcular el resultado de una función
+        function recalculateFunction(funcName, paramCount) {
+            // Obtener los parámetros ingresados
+            const params = [];
+            for (let i = 0; i < paramCount; i++) {
+                const input = document.getElementById(`${funcName}-param${i}`);
+                const value = parseFloat(input.value);
+                
+                if (isNaN(value)) {
+                    alert(`Por favor ingresa un valor válido para el parámetro ${i+1}`);
+                    return;
+                }
+                
+                params.push(value);
+            }
+            
+            // Encontrar la función correspondiente
+            const func = pythonFunctions.find(f => f.name === funcName);
+            if (!func) return;
+            
+            // Calcular nuevo resultado
+            const result = func.calculate(...params);
+            
+            // Mostrar el resultado
+            const resultValueElement = document.getElementById(`${funcName}-result-value`);
+            const newResultElement = document.getElementById(`${funcName}-new-result`);
+            
+            resultValueElement.textContent = result.toFixed(6);
+            newResultElement.style.display = 'flex';
+            
+            // Resaltar la tarjeta
+            const card = newResultElement.closest('.function-card');
+            card.style.backgroundColor = '#edfff5';
+            card.style.borderLeftColor = '#27ae60';
+            
+            setTimeout(() => {
+                card.style.backgroundColor = '';
+                card.style.borderLeftColor = '';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
